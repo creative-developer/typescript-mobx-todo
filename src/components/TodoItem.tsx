@@ -11,12 +11,23 @@ import IconButton from '@material-ui/core/IconButton'
 import Box from '@material-ui/core/Box'
 import DeleteIcon from '@material-ui/icons/Delete'
 
-const TodoItem: React.FC<ITodos> = ({ id, text, isEdit, completed }) => {
-  const classes = useStyles()
+const TodoItem: React.FC<ITodos> = ({ id, text, isEdit, completed }: ITodos) => {
   const { TodoStore: store } = useStore()
+  const { todoItem, todoItemCompleted } = useStyles()
+  const itemClassnames: string = `${todoItem} ${completed ? todoItemCompleted : ''}`
+
+  const handleCompleted = (id: string) => {
+    store.changeCompletedStatus(id)
+  }
   return (
-    <li className={classes.todoItem}>
-      <FormControlLabel value="end" control={<Checkbox color="default" />} label={text} />
+    <li className={itemClassnames}>
+      <FormControlLabel
+        value="end"
+        control={
+          <Checkbox color="default" onChange={() => handleCompleted(id)} checked={completed} />
+        }
+        label={text}
+      />
       <Box>
         <IconButton onClick={() => store.changeEditStatus(id)}>
           <EditIcon />

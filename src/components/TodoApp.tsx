@@ -6,7 +6,7 @@ import { configure } from 'mobx'
 import { Container } from '@material-ui/core'
 
 import Header from './Header'
-import TodoForm from './TodoForm'
+import AddContainer from './AddContainer'
 import TodosList from './TodosList'
 
 configure({ enforceActions: 'observed' })
@@ -17,7 +17,7 @@ const TodoApp: React.FC = observer(() => {
       <Header />
       <Container maxWidth="md">
         <TodosList />
-        <TodoForm />
+        <AddContainer />
       </Container>
     </div>
   )

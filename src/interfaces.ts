@@ -1,13 +1,17 @@
-export interface ITodos {
+export interface ITodosBase {
   id: string
   text: string
+}
+
+export interface ITodos extends ITodosBase {
   completed: boolean
   isEdit: boolean
 }
 
 export interface ITodoFormProps {
-  id?: string
-  text?: string
-  completed?: boolean
-  isEdit?: boolean
+  text: string
+  cancelBtn?: React.ReactNode
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void
+  handleChangeInput: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleAddTodo: () => void
 }

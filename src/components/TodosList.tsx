@@ -1,13 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { useStore } from '../hooks/useStore'
-import { createStyles, makeStyles } from '@material-ui/core'
-import { observer } from 'mobx-react-lite'
+import { observer } from 'mobx-react'
 
-import { ITodos } from '../interfaces'
+import { ITodos, ITodosBase } from '../interfaces'
+
+import { createStyles, makeStyles } from '@material-ui/core'
+
 import TodoItem from './TodoItem'
-// import TodoForm from './TodoForm'
-import EditingForm from './EditingForm'
+import EditingContainer from './EditingContainer'
 
 const TodosList: React.FC = observer(() => {
   const { TodoStore: store } = useStore()
@@ -15,13 +16,15 @@ const TodosList: React.FC = observer(() => {
 
   return (
     <ul className={classes.todoList}>
-      {store.todos.map(({ id, text, isEdit, completed }: ITodos) =>
-        isEdit ? (
-          <EditingForm key={id} id={id} text={text} isEdit={isEdit} completed={completed} />
+      {store.todos.map((todo: ITodos) => {
+        const { id, text }: ITodosBase = todo
+        const editingFormProps: ITodosBase = { id, text }
+        return todo.isEdit ? (
+          <EditingContainer key={id} {...editingFormProps} />
         ) : (
-          <TodoItem key={id} id={id} isEdit={isEdit} completed={completed} text={text} />
-        ),
-      )}
+          <TodoItem key={id} {...todo} />
+        )
+      })}
     </ul>
   )
 })

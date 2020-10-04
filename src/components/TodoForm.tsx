@@ -1,33 +1,16 @@
-import React, { useState } from 'react'
+import React from 'react'
 
-import { useStore } from '../hooks/useStore'
+import { ITodoFormProps } from '../interfaces'
 
-import TextField from '@material-ui/core/TextField'
-import IconButton from '@material-ui/core/IconButton'
-import Box from '@material-ui/core/Box'
-import DoneIcon from '@material-ui/icons/Done'
 import { createStyles, makeStyles, Theme } from '@material-ui/core'
+import TextField from '@material-ui/core/TextField'
+import Box from '@material-ui/core/Box'
+import IconButton from '@material-ui/core/IconButton'
+import DoneIcon from '@material-ui/icons/Done'
 
-const TodoForm: React.FC = () => {
-  const { TodoStore: store } = useStore()
+const TodoForm: React.FC<ITodoFormProps> = (props) => {
+  const { handleAddTodo, handleChangeInput, handleSubmit, cancelBtn, text }: ITodoFormProps = props
   const classes = useStyles()
-  const [todoText, setTodoText] = useState('')
-
-  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setTodoText(e.target.value)
-  }
-
-  const handleAddTodo = (): void => {
-    if (todoText !== '') {
-      store.addTodo(todoText)
-      setTodoText('')
-    }
-  }
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault()
-    handleAddTodo()
-  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -38,17 +21,16 @@ const TodoForm: React.FC = () => {
         className={classes.todoContainer}>
         <TextField
           className={classes.root}
-          required
-          id="standard-required"
           placeholder="Сходить в магазин..."
           size="medium"
           onChange={handleChangeInput}
-          value={todoText}
+          value={text}
         />
         <Box>
           <IconButton onClick={handleAddTodo}>
             <DoneIcon />
           </IconButton>
+          {cancelBtn && cancelBtn}
         </Box>
       </Box>
     </form>
