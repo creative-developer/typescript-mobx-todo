@@ -1,9 +1,15 @@
-import { action, makeAutoObservable, observable } from 'mobx'
+import { action, computed, makeAutoObservable, observable } from 'mobx'
 import { ITodos } from './../interfaces'
+import { updateTodos } from '../utils/updateTodos'
 
 const defaultState: ITodos[] = [
   { id: 'todoItem_1601818066904', text: 'Drink coffee...', completed: false, isEdit: false },
 ]
+
+const getCurrentTodo = (todos: ITodos[], id: string): ITodos => {
+  const currentTodoIndex: number = todos.findIndex((todo: ITodos) => todo.id === id)
+  return todos[currentTodoIndex]
+}
 
 class TodoStore {
   @observable
@@ -11,6 +17,11 @@ class TodoStore {
 
   constructor() {
     makeAutoObservable(this)
+  }
+
+  @computed
+  get getUpdatedTodos(): ITodos[] {
+    return this.todos
   }
 
   @action
@@ -22,60 +33,35 @@ class TodoStore {
       isEdit: false,
     }
     this.todos.push(newTodo)
-    this.updateTodos()
+    updateTodos(this.getUpdatedTodos)
   }
 
   @action
   removeTodoItem(id: string): void {
     const filteredTodos: ITodos[] = this.todos.filter((todo) => todo.id !== id)
     this.todos = filteredTodos
-    this.updateTodos()
-  }
-
-  @action
-  updateTodos(): void {
-    localStorage.setItem('todos', JSON.stringify(this.todos))
-    window.addEventListener('storage', (e) => {
-      this.todos = JSON.parse(localStorage.getItem('todos') || '[]')
-    })
+    updateTodos(this.getUpdatedTodos)
   }
 
   @action
   saveTodo(id: string, text: string): void {
-    const changeTextTodo: ITodos[] = this.todos.map((todo: ITodos) => {
-      if (todo.id === id) {
-        return { ...todo, text }
-      }
-      return todo
-    })
-    this.todos = changeTextTodo
-    this.updateTodos()
+    const currentTodo: ITodos = getCurrentTodo(this.todos, id)
+    currentTodo.text = text
+    updateTodos(this.getUpdatedTodos)
   }
 
   @action
   changeEditStatus(id: string): void {
-    const changedTodo: ITodos[] = this.todos.map((todo: ITodos) => {
-      const text = todo.text
-      if (todo.id === id) {
-        return { ...todo, text, isEdit: !todo.isEdit }
-      }
-      return todo
-    })
-    this.todos = changedTodo
-    this.updateTodos()
+    const currentTodo: ITodos = getCurrentTodo(this.todos, id)
+    currentTodo.isEdit = !currentTodo.isEdit
+    updateTodos(this.getUpdatedTodos)
   }
 
   @action
   changeCompletedStatus(id: string): void {
-    const changedTodo: ITodos[] = this.todos.map((todo: ITodos) => {
-      const text = todo.text
-      if (todo.id === id) {
-        return { ...todo, text, completed: !todo.completed }
-      }
-      return todo
-    })
-    this.todos = changedTodo
-    this.updateTodos()
+    const currentTodo: ITodos = getCurrentTodo(this.todos, id)
+    currentTodo.completed = !currentTodo.completed
+    updateTodos(this.getUpdatedTodos)
   }
 }
 export default new TodoStore()
